@@ -60,4 +60,31 @@ export const Product = styled('div', {
       opacity: 1,
     },
   },
+
+  div: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'flex-start',
+    justifyContent: 'center',
+  },
+})
+
+export const BagShopping = styled('button', {
+  width: '3rem',
+  height: '3rem',
+  backgroundColor: '#00875F',
+  borderRadius: 6,
+
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+
+  border: 0,
+  outline: 'none',
+
+  cursor: 'pointer',
+
+  svg: {
+    color: 'white',
+  },
 })

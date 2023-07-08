@@ -1,6 +1,6 @@
 import { GetStaticProps } from 'next'
 import Head from 'next/head'
-import { HomeContainer, Product } from '@/styles/pages/home'
+import { BagShopping, HomeContainer, Product } from '@/styles/pages/home'
 import { useKeenSlider } from 'keen-slider/react'
 import { stripe } from '@/lib/stripe'
 import Link from 'next/link'
@@ -8,6 +8,10 @@ import Image from 'next/image'
 import Stripe from 'stripe'
 
 import 'keen-slider/keen-slider.min.css'
+import { ShoppingBag } from 'lucide-react'
+import { HeaderContent } from '@/components/Header'
+import { useContext } from 'react'
+import { ProductsContext } from '@/contexts/ProductsContext'
 
 interface HomeProps {
   products: {
@@ -18,7 +22,8 @@ interface HomeProps {
   }[]
 }
 
-export default function Home({ products }: HomeProps) {
+export default function Home(props: HomeProps) {
+  const { products } = useContext(ProductsContext)
   const [sliderRef] = useKeenSlider({
     slides: {
       perView: 3,
@@ -32,8 +37,10 @@ export default function Home({ products }: HomeProps) {
         <title>Home | Ignite Shop</title>
       </Head>
 
+      <HeaderContent quantityProducts={String(products.length)} />
+
       <HomeContainer ref={sliderRef} className="keen-slider">
-        {products.map((product) => {
+        {props.products.map((product) => {
           return (
             <Link
               href={`/product/${product.id}`}
@@ -49,8 +56,13 @@ export default function Home({ products }: HomeProps) {
                 />
 
                 <footer>
-                  <strong>{product.name}</strong>
-                  <span>{product.price}</span>
+                  <div>
+                    <strong>{product.name}</strong>
+                    <span>{product.price}</span>
+                  </div>
+                  <BagShopping>
+                    <ShoppingBag />
+                  </BagShopping>
                 </footer>
               </Product>
             </Link>

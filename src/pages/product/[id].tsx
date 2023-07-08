@@ -1,46 +1,22 @@
+import { GetStaticPaths, GetStaticProps } from 'next'
+import { ProductProps, ProductsContext } from '@/contexts/ProductsContext'
 import { stripe } from '@/lib/stripe'
+import { useContext } from 'react'
+import Head from 'next/head'
+import Image from 'next/image'
+import Stripe from 'stripe'
 import {
   ImageContainer,
   ProductContainer,
   ProductDetails,
 } from '@/styles/pages/product'
-import axios from 'axios'
-import { GetStaticPaths, GetStaticProps } from 'next'
-import Head from 'next/head'
-import Image from 'next/image'
-import { useState } from 'react'
-import Stripe from 'stripe'
-
-interface ProductProps {
-  product: {
-    id: string
-    name: string
-    imageUrl: string
-    price: string
-    description: string
-    defaultPriceId: string
-  }
-}
+import { HeaderContent } from '@/components/Header'
 
 export default function Product({ product }: ProductProps) {
-  const [isCreatingCheckoutSession, setIsCreatingCheckoutSession] =
-    useState(false)
+  const { addProductInBag, products } = useContext(ProductsContext)
 
-  async function handleByProduct() {
-    try {
-      setIsCreatingCheckoutSession(true)
-      const response = await axios.post('/api/checkout', {
-        priceId: product.defaultPriceId,
-      })
-
-      const { checkoutUrl } = response.data
-
-      window.location.href = checkoutUrl
-    } catch (err) {
-      // Conectar com uma ferramenta de observabilidade
-      setIsCreatingCheckoutSession(false)
-      alert('Falha ao redirecionar ao checkout')
-    }
+  async function handleAddProductInBag(data: ProductProps) {
+    addProductInBag(data)
   }
 
   return (
@@ -48,6 +24,7 @@ export default function Product({ product }: ProductProps) {
       <Head>
         <title>{product.name} | Ignite Shop</title>
       </Head>
+      <HeaderContent quantityProducts={String(products.length)} />
       <ProductContainer>
         <ImageContainer>
           <Image src={product.imageUrl} width={520} height={480} alt="" />
@@ -59,11 +36,8 @@ export default function Product({ product }: ProductProps) {
 
           <p>{product.description}</p>
 
-          <button
-            disabled={isCreatingCheckoutSession}
-            onClick={handleByProduct}
-          >
-            Comprar agora
+          <button onClick={() => handleAddProductInBag({ product })}>
+            Colocar na sacola
           </button>
         </ProductDetails>
       </ProductContainer>
