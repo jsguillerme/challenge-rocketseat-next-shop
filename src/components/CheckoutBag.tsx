@@ -1,4 +1,4 @@
-import { ProductsContext } from '@/contexts/ProductsContext'
+import { ProductProps, ProductsContext } from '@/contexts/ProductsContext'
 import {
   CloseButton,
   Overlay,
@@ -9,13 +9,34 @@ import {
 } from '@/styles/components/bag'
 import * as Dialog from '@radix-ui/react-dialog'
 import { X } from 'lucide-react'
-import { useContext } from 'react'
+import { useContext, useState } from 'react'
 
 import emptyImg from '@/assets/Empty.svg'
 import Image from 'next/image'
+import axios from 'axios'
 
 export function CheckoutBagModal() {
   const { products, removeProductInBag } = useContext(ProductsContext)
+  const [isProcessingBuy, setIsProcessingBuy] = useState(false)
+
+  function handleRemoveProductInBag(id: string) {
+    removeProductInBag(id)
+  }
+
+  async function handleBuyProducts(data: ProductProps[]) {
+    setIsProcessingBuy(true)
+    try {
+      const response = await axios.post('/api/checkout', {
+        items: data,
+      })
+
+      const { checkoutUrl } = response.data
+      window.location.href = checkoutUrl
+    } catch (error) {
+      setIsProcessingBuy(false)
+      alert('Não foi possível prosseguir com a compra dos produtos')
+    }
+  }
 
   const amountPrices = products.reduce((amount, product) => {
     const priceSanitized = product.product.price.replace('R$', '')
@@ -23,10 +44,6 @@ export function CheckoutBagModal() {
 
     return amount + priceSanitizedToNumber
   }, 0)
-
-  function handleRemoveProductInBag(id: string) {
-    removeProductInBag(id)
-  }
 
   return (
     <Dialog.Portal>
@@ -87,7 +104,12 @@ export function CheckoutBagModal() {
               </p>
             </div>
           </div>
-          <button disabled={!products.length}>Finalizar Compra</button>
+          <button
+            disabled={!products.length || isProcessingBuy}
+            onClick={() => handleBuyProducts(products)}
+          >
+            Finalizar Compra
+          </button>
         </BagPrices>
       </Content>
     </Dialog.Portal>

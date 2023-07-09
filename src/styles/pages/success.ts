@@ -6,10 +6,25 @@ export const SuccessContainer = styled('main', {
   alignItems: 'center',
   justifyContent: 'center',
   margin: '0 auto',
-  height: 656,
+  height: '100vh',
+
+  div: {
+    width: '100%',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: '1rem',
+    zIndex: 0,
+
+    '&:nth-child(3n)': {
+      position: 'absolute',
+      marginLeft: '-1rem',
+      zIndex: 1,
+    },
+  },
 
   h1: {
-    fontSize: '$2xl',
+    fontSize: '$xl',
     color: '$gray100',
   },
 
@@ -36,17 +51,19 @@ export const SuccessContainer = styled('main', {
 })
 
 export const ImageContainer = styled('div', {
-  width: '100%',
+  width: 130,
   maxWidth: 130,
-  height: 145,
+  height: 130,
   background: 'linear-gradient(180deg, #1ea483 0%, #7465d4 100%)',
-  borderRadius: 8,
+  borderRadius: '9999px',
   padding: '0.25rem',
   marginTop: '4rem',
 
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
+
+  boxShadow: '1px 1px black',
 
   img: {
     objectFit: 'cover',

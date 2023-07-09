@@ -1,3 +1,4 @@
+import { ProductProps } from '@/contexts/ProductsContext'
 import { stripe } from '@/lib/stripe'
 import { NextApiRequest, NextApiResponse } from 'next'
 
@@ -5,32 +6,52 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse,
 ) {
-  const { priceId } = req.body
-
+  const { items } = req.body
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' })
   }
 
-  if (!priceId) {
-    return res.status(400).json({ error: 'Price not found' })
+  if (!items) {
+    return res.status(400).json({ error: 'Price not found or not found items' })
   }
 
-  const priceID = priceId
   const successUrl = `${process.env.NEXT_URL}/success?session_id={CHECKOUT_SESSION_ID}`
   const cancelUrl = `${process.env.NEXT_URL}/`
 
-  console.log('line_items ==> ', priceID)
+  const lineItemsProducts: any = []
+  const productsBefore: any = []
+
+  items.map((item: ProductProps) => {
+    if (!productsBefore.includes(item.product.defaultPriceId)) {
+      productsBefore.push(item.product.defaultPriceId)
+
+      lineItemsProducts.push({
+        price: item.product.defaultPriceId,
+        quantity: 1,
+      })
+
+      return {
+        price: item.product.defaultPriceId,
+        quantity: 1,
+      }
+    } else {
+      const productIndexToEdit = productsBefore.indexOf(
+        item.product.defaultPriceId,
+      )
+      productsBefore.push(item.product.defaultPriceId)
+
+      return {
+        price: lineItemsProducts[productIndexToEdit].price,
+        quantity: lineItemsProducts[productIndexToEdit].quantity++,
+      }
+    }
+  })
 
   const checkoutSession = await stripe.checkout.sessions.create({
     success_url: successUrl,
     cancel_url: cancelUrl,
     mode: 'payment',
-    line_items: [
-      {
-        price: priceID,
-        quantity: 1,
-      },
-    ],
+    line_items: lineItemsProducts,
   })
 
   return res.status(201).json({
