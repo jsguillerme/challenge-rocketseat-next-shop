@@ -1,3 +1,4 @@
+import { uuid } from 'uuidv4'
 import { GetStaticPaths, GetStaticProps } from 'next'
 import { ProductProps, ProductsContext } from '@/contexts/ProductsContext'
 import { stripe } from '@/lib/stripe'
@@ -12,31 +13,52 @@ import {
 } from '@/styles/pages/product'
 import { HeaderContent } from '@/components/Header'
 
-export default function Product({ product }: ProductProps) {
+export default function Product({
+  defaultPriceId,
+  description,
+  id,
+  imageUrl,
+  name,
+  price,
+  productId,
+}: ProductProps) {
   const { addProductInBag, products } = useContext(ProductsContext)
 
-  async function handleAddProductInBag(data: ProductProps) {
-    addProductInBag(data)
+  async function handleAddProductInBag(payload: ProductProps) {
+    payload.productId = uuid()
+    addProductInBag(payload)
   }
 
   return (
     <>
       <Head>
-        <title>{product.name} | Ignite Shop</title>
+        <title>{name} | Ignite Shop</title>
       </Head>
       <HeaderContent quantityProducts={String(products.length)} />
       <ProductContainer>
         <ImageContainer>
-          <Image src={product.imageUrl} width={520} height={480} alt="" />
+          <Image src={imageUrl} width={520} height={480} alt="" />
         </ImageContainer>
 
         <ProductDetails>
-          <h1>{product.name}</h1>
-          <span>{product.price}</span>
+          <h1>{name}</h1>
+          <span>{price}</span>
 
-          <p>{product.description}</p>
+          <p>{description}</p>
 
-          <button onClick={() => handleAddProductInBag({ product })}>
+          <button
+            onClick={() =>
+              handleAddProductInBag({
+                defaultPriceId,
+                description,
+                id,
+                imageUrl,
+                name,
+                price,
+                productId,
+              })
+            }
+          >
             Colocar na sacola
           </button>
         </ProductDetails>
@@ -74,17 +96,15 @@ export const getStaticProps: GetStaticProps<any, { id: string }> = async ({
 
   return {
     props: {
-      product: {
-        id: product.id,
-        name: product.name,
-        imageUrl: product.images[0],
-        price: new Intl.NumberFormat('pt-BR', {
-          style: 'currency',
-          currency: 'BRL',
-        }).format(price.unit_amount! / 100),
-        description: product.description,
-        defaultPriceId: price.id,
-      },
+      id: product.id,
+      name: product.name,
+      imageUrl: product.images[0],
+      price: new Intl.NumberFormat('pt-BR', {
+        style: 'currency',
+        currency: 'BRL',
+      }).format(price.unit_amount! / 100),
+      description: product.description,
+      defaultPriceId: price.id,
     },
     revalidate: 60 * 60 * 1, // 1 hour
   }

@@ -5,14 +5,13 @@ interface ProductsProviderProps {
 }
 
 export interface ProductProps {
-  product: {
-    id: string
-    name: string
-    imageUrl: string
-    price: string
-    description: string
-    defaultPriceId: string
-  }
+  id: string
+  name: string
+  imageUrl: string
+  price: string
+  description: string
+  defaultPriceId: string
+  productId: string
 }
 
 interface ProductsContextType {
@@ -31,7 +30,7 @@ export function ProductsProvider({ children }: ProductsProviderProps) {
   }
 
   function removeProductInBag(id: string) {
-    setProducts((state) => state.filter((product) => product.product.id !== id))
+    setProducts((state) => state.filter((product) => product.productId !== id))
   }
 
   return (

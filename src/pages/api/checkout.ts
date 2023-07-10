@@ -22,23 +22,21 @@ export default async function handler(
   const productsBefore: any = []
 
   items.map((item: ProductProps) => {
-    if (!productsBefore.includes(item.product.defaultPriceId)) {
-      productsBefore.push(item.product.defaultPriceId)
+    if (!productsBefore.includes(item.defaultPriceId)) {
+      productsBefore.push(item.defaultPriceId)
 
       lineItemsProducts.push({
-        price: item.product.defaultPriceId,
+        price: item.defaultPriceId,
         quantity: 1,
       })
 
       return {
-        price: item.product.defaultPriceId,
+        price: item.defaultPriceId,
         quantity: 1,
       }
     } else {
-      const productIndexToEdit = productsBefore.indexOf(
-        item.product.defaultPriceId,
-      )
-      productsBefore.push(item.product.defaultPriceId)
+      const productIndexToEdit = productsBefore.indexOf(item.defaultPriceId)
+      productsBefore.push(item.defaultPriceId)
 
       return {
         price: lineItemsProducts[productIndexToEdit].price,

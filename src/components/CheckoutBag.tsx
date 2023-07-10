@@ -39,7 +39,7 @@ export function CheckoutBagModal() {
   }
 
   const amountPrices = products.reduce((amount, product) => {
-    const priceSanitized = product.product.price.replace('R$', '')
+    const priceSanitized = product.price.replace('R$', '')
     const priceSanitizedToNumber = Number(priceSanitized.replace(',', '.'))
 
     return amount + priceSanitizedToNumber
@@ -64,16 +64,16 @@ export function CheckoutBagModal() {
           ) : (
             products.map((product) => {
               return (
-                <BagProducts key={product.product.id}>
+                <BagProducts key={product.productId}>
                   <div>
-                    <img src={product.product.imageUrl} alt="" />
+                    <img src={product.imageUrl} alt="" />
                   </div>
                   <section>
-                    <span>{product.product.name}</span>
-                    <p>{product.product.price}</p>
+                    <span>{product.name}</span>
+                    <p>{product.price}</p>
                     <button
                       onClick={() =>
-                        handleRemoveProductInBag(product.product.id)
+                        handleRemoveProductInBag(product.productId)
                       }
                     >
                       Remover
